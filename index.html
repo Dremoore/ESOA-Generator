@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESOA Attachment Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4 max-w-4xl">
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-center mb-6">ESOA Attachment Generator</h1>
+
+        <!-- Input Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div class="flex flex-col sm:flex-row gap-4 items-end">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">Date</label>
+                    <div class="flex items-center">
+                        <input id="dateInput" type="text" placeholder="mm/dd/yyyy" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
+                        <button id="calendarBtn" class="ml-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">📅</button>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">Type</label>
+                    <select id="typeSelect" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="" disabled selected>Please select an option</option>
+                        <option value="No EPO and No Lab">No EPO and No Lab</option>
+                        <option value="No EPO but With Lab">No EPO but With Lab</option>
+                        <option value="With EPO Alfa and Lab - Double Dose">With EPO Alfa and Lab - Double Dose</option>
+                        <option value="With EPO Alfa and Lab">With EPO Alfa and Lab</option>
+                        <option value="With EPO Alfa But No Lab - Double Dose">With EPO Alfa But No Lab - Double Dose</option>
+                        <option value="With EPO Alfa But No Lab">With EPO Alfa But No Lab</option>
+                        <option value="With EPO Beta and Lab">With EPO Beta and Lab</option>
+                        <option value="With EPO Beta But No Lab">With EPO Beta But No Lab</option>
+                    </select>
+                </div>
+                <button id="addBtn" class="p-2 bg-green-500 text-white rounded-md hover:bg-green-600">Add</button>
+            </div>
+            <!-- View Panel -->
+            <div id="viewPanel" class="mt-4">
+                <h2 class="text-lg font-semibold">Added Entries</h2>
+                <ul id="entryList" class="mt-2 space-y-2"></ul>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="text-center">
+            <button id="generateBtn" class="p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700">Generate Excel</button>
+        </div>
+
+        <!-- Modal -->
+        <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-auto">
+                <h2 class="text-xl font-bold mb-4">Preview of Excel File</h2>
+                <div id="previewContent"></div>
+                <div class="mt-4 flex justify-end gap-4">
+                    <button id="cancelBtn" class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Cancel</button>
+                    <button id="confirmGenerateBtn" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+                        <span id="generateText">Generate</span>
+                        <svg id="loadingSpinner" class="hidden animate-spin h-5 w-5 ml-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initializing state for entries
+        let entries = [];
+
+        // Setting up date picker
+        flatpickr("#dateInput", {
+            dateFormat: "m/d/Y",
+            allowInput: true,
+            onChange: function(selectedDates, dateStr) {
+                document.getElementById("dateInput").value = dateStr;
+            }
+        });
+
+        // Handling Add button click
+        document.getElementById("addBtn").addEventListener("click", () => {
+            const dateInput = document.getElementById("dateInput").value;
+            const typeSelect = document.getElementById("typeSelect").value;
+
+            // Validating inputs
+            const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+            if (!dateRegex.test(dateInput)) {
+                alert("Please enter a valid date in mm/dd/yyyy format.");
+                return;
+            }
+            if (!typeSelect) {
+                alert("Please select a Type.");
+                return;
+            }
+
+            // Adding entry
+            entries.push({ date: dateInput, type: typeSelect });
+            updateViewPanel();
+            // Resetting inputs
+            document.getElementById("dateInput").value = "";
+            document.getElementById("typeSelect").value = "";
+        });
+
+        // Updating view panel
+        function updateViewPanel() {
+            const entryList = document.getElementById("entryList");
+            entryList.innerHTML = "";
+            entries.forEach((entry, index) => {
+                const li = document.createElement("li");
+                li.className = "flex justify-between items-center p-2 border-b";
+                li.innerHTML = `${index + 1}. ${entry.date} ${entry.type} <button class="p-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="deleteEntry(${index})">Delete</button>`;
+                entryList.appendChild(li);
+            });
+        }
+
+        // Deleting an entry
+        function deleteEntry(index) {
+            entries.splice(index, 1);
+            updateViewPanel();
+        }
+
+        // Converting mm/dd/yyyy to Excel serial date
+        function dateToExcelSerial(dateStr) {
+            const [month, day, year] = dateStr.split("/").map(Number);
+            const date = new Date(year, month - 1, day);
+            const excelEpoch = new Date(1899, 11, 30);
+            const diff = (date - excelEpoch) / (1000 * 60 * 60 * 24);
+            return Math.floor(diff);
+        }
+
+        // Generating Excel data for "No EPO and No Lab"
+        function generateExcelData() {
+            const xrayData = [
+                ["TYPE", "DESCRIPTION", "QTY", "Price", "Total", "RENDER DATE", "ESOA Group Type", "PhilHealth Unit Mapping", "PhilHealth Mapping", "", "Imaging", "RoomAndBoard", "BATH SOAP", "BAR"],
+                ["Supplies", "DIALYZER", 1, 500, 500, "", "MedicalSupplies", "PIECE", "LOW FLUX DIALYZER OR ITS EQUIVALENT", "", "", "", "", ""],
+                ["Supplies", "BLOODLINES", 1, 312.5, 312.5, "", "MedicalSupplies", "PIECE", "BLOODLINES", "", "", "", "", ""],
+                ["Others", "Fistula Needles with Safety", 1, 312.5, 312.5, "", "Others", "PIECE", "Others", "", "", "", "", ""],
+                ["Supplies", "FISTULA KIT", 1, 312.5, 312.5, "", "MedicalSupplies", "KIT", "FISTULA KIT", "", "", "", "", ""],
+                ["Others", "Room and Board - Use of Machines", 1, 500, 500, "", "RoomAndBoard", "", "ROOM AND BOARD", "", "", "", "", ""],
+                ["Others", "Room and Board - Personnel Costs", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD", "", "", "", "", ""],
+                ["Others", "Room and Board - Rentals and Utilities", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD", "", "", "", "", ""],
+                ["Others", "Room and Board - Other Administrative Costs", 1, 1162.5, 1162.5, "", "RoomAndBoard", "", "ROOM AND BOARD", "", "", "", "", ""]
+            ];
+            const drugsData = [
+                ["ITEMID", "BRAND NAME", "GENERIC NAME", "QTY", "PRICE", "TOTAL COST", "PREPARATION", "RENDER DATE", "FREQUENCY", "ROUTE", "PhilHealt Mapping", "PhilHealth Unit Mapping", "", "", "", "Drug Description", "UNIT MAPPING"],
+                ["MED01", "APRINOL", "REGULAR HEPARIN", 1, 250, 250, "VIAL", "", "", "", "HEPARIN ( as SODIUM) 5000 IU/mL SOLUTION 5 mL VIAL", "VIAL", "", "", "", "", ""],
+                ["MED02", "SALINE PHILRX", "PNSS(PLAIN NORMAL SALINE SOLUTION)", 1, 100, 100, "BOTTLE", "", "", "", "0.9% SODIUM CHLORIDE SOLUTION 1 L BOTTLE", "BOTTLE", "", "", "", "", ""],
+                ["MED03", "CITRAPURE", "HEMODIALYSIS ACID CONCENTRATE (DIALYSATE ACETATE BASED)", 1, 375, 375, "GALLON", "", "", "", "HEMODIALYSIS ACID CONCENTRATE (DIALYSATE ACETATE BASED) 5 L", "GALLON", "", "", "", "", ""],
+                ["MED04", "RENAL PURE", "HEMODIALYSIS BICARBONATE CONCENTRATE", 1, 175, 175, "GALLON", "", "", "", "HEMODIALYSIS BICARBONATE CONCENTRATE 5 L", "GALLON", "", "", "", "", ""]
+            ];
+            const paymentItemData = [
+                ["OR Number", "DESCRIPTION", "QTY", "UNIT PRICE", "AMOUNT", "", "", "", "", "OR Number", "DESCRIPTION", "QTY", "UNIT PRICE", "AMOUNT"]
+            ];
+            const paymentData = [
+                ["OR NUMBER", "OR DATE", "AMOUNT", "VAT EXEMPT SALE", "VAT"]
+            ];
+
+            // Populating RENDER DATE for each entry
+            entries.forEach(entry => {
+                const serialDate = dateToExcelSerial(entry.date);
+                if (entry.type === "No EPO and No Lab") {
+                    xrayData.slice(1).forEach(row => row[5] = serialDate);
+                    drugsData.slice(1).forEach(row => row[7] = serialDate);
+                }
+            });
+
+            return { xrayData, drugsData, paymentItemData, paymentData };
+        }
+
+        // Generating preview HTML
+        function generatePreview() {
+            const { xrayData, drugsData, paymentItemData, paymentData } = generateExcelData();
+            let html = `
+                <h3 class="font-semibold">Xray Lab Supplies and Others</h3>
+                <table class="w-full border-collapse border border-gray-300 mb-4">
+                    <tr class="bg-gray-200">${xrayData[0].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
+                    ${xrayData.slice(1).map(row => `<tr>${row.map(cell => `<td class="border border-gray-300 p-2">${cell}</td>`).join("")}</tr>`).join("")}
+                </table>
+                <h3 class="font-semibold">Drugs and Medicine</h3>
+                <table class="w-full border-collapse border border-gray-300 mb-4">
+                    <tr class="bg-gray-200">${drugsData[0].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
+                    ${drugsData.slice(1).map(row => `<tr>${row.map(cell => `<td class="border border-gray-300 p-2">${cell}</td>`).join("")}</tr>`).join("")}
+                </table>
+                <h3 class="font-semibold">Payment ITEM</h3>
+                <p>Empty template with headers:</p>
+                <table class="w-full border-collapse border border-gray-300 mb-4">
+                    <tr class="bg-gray-200">${paymentItemData[0].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
+                </table>
+                <h3 class="font-semibold">Payment</h3>
+                <p>Empty template with headers:</p>
+                <table class="w-full border-collapse border border-gray-300 mb-4">
+                    <tr class="bg-gray-200">${paymentData[0].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
+                </table>
+            `;
+            document.getElementById("previewContent").innerHTML = html;
+        }
+
+        // Handling Generate button
+        document.getElementById("generateBtn").addEventListener("click", () => {
+            if (entries.length === 0) {
+                alert("Please add at least one entry.");
+                return;
+            }
+            generatePreview();
+            document.getElementById("previewModal").classList.remove("hidden");
+        });
+
+        // Handling Cancel button
+        document.getElementById("cancelBtn").addEventListener("click", () => {
+            document.getElementById("previewModal").classList.add("hidden");
+        });
+
+        // Handling Confirm Generate button
+        document.getElementById("confirmGenerateBtn").addEventListener("click", () => {
+            const generateBtn = document.getElementById("confirmGenerateBtn");
+            const generateText = document.getElementById("generateText");
+            const loadingSpinner = document.getElementById("loadingSpinner");
+
+            // Showing loading state
+            generateText.textContent = "Generating...";
+            loadingSpinner.classList.remove("hidden");
+            generateBtn.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    const { xrayData, drugsData, paymentItemData, paymentData } = generateExcelData();
+                    const wb = XLSX.utils.book_new();
+                    const xrayWs = XLSX.utils.aoa_to_sheet(xrayData);
+                    const drugsWs = XLSX.utils.aoa_to_sheet(drugsData);
+                    const paymentItemWs = XLSX.utils.aoa_to_sheet(paymentItemData);
+                    const paymentWs = XLSX.utils.aoa_to_sheet(paymentData);
+
+                    // Applying bold formatting to headers
+                    const boldStyle = { font: { bold: true } };
+                    ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1", "J1", "K1", "L1", "M1", "N1"].forEach(cell => {
+                        if (xrayWs[cell]) xrayWs[cell].s = boldStyle;
+                    });
+                    ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1", "J1", "K1", "L1", "M1", "N1", "O1", "P1", "Q1"].forEach(cell => {
+                        if (drugsWs[cell]) drugsWs[cell].s = boldStyle;
+                    });
+                    ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1", "I1", "J1", "K1", "L1", "M1", "N1"].forEach(cell => {
+                        if (paymentItemWs[cell]) paymentItemWs[cell].s = boldStyle;
+                    });
+                    ["A1", "B1", "C1", "D1", "E1"].forEach(cell => {
+                        if (paymentWs[cell]) paymentWs[cell].s = boldStyle;
+                    });
+
+                    // Formatting numbers
+                    xrayData.slice(1).forEach((row, i) => {
+                        if (xrayWs[`C${i + 2}`]) xrayWs[`C${i + 2}`].t = "n"; // QTY
+                        if (xrayWs[`D${i + 2}`]) xrayWs[`D${i + 2}`].t = "n"; // Price
+                        if (xrayWs[`E${i + 2}`]) xrayWs[`E${i + 2}`].t = "n"; // Total
+                        if (xrayWs[`F${i + 2}`]) xrayWs[`F${i + 2}`].t = "n"; // RENDER DATE
+                    });
+                    drugsData.slice(1).forEach((row, i) => {
+                        if (drugsWs[`D${i + 2}`]) drugsWs[`D${i + 2}`].t = "n"; // QTY
+                        if (drugsWs[`E${i + 2}`]) drugsWs[`E${i + 2}`].t = "n"; // PRICE
+                        if (drugsWs[`F${i + 2}`]) drugsWs[`F${i + 2}`].t = "n"; // TOTAL COST
+                        if (drugsWs[`H${i + 2}`]) drugsWs[`H${i + 2}`].t = "n"; // RENDER DATE
+                    });
+
+                    XLSX.utils.book_append_sheet(wb, xrayWs, "Xray Lab Supplies and Others");
+                    XLSX.utils.book_append_sheet(wb, drugsWs, "Drugs and Medicine");
+                    XLSX.utils.book_append_sheet(wb, paymentItemWs, "Payment ITEM");
+                    XLSX.utils.book_append_sheet(wb, paymentWs, "Payment");
+
+                    // Creating dynamic file name
+                    const firstDate = entries[0]?.date || "20250718";
+                    const formattedDate = firstDate.replace(/\//g, "");
+                    const fileName = `ESOA_${formattedDate}.xlsx`;
+
+                    // Generating and downloading file
+                    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+                    const blob = new Blob([wbout], { type: "application/octet-stream" });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    // Resetting button and showing success
+                    generateText.textContent = "Generate";
+                    loadingSpinner.classList.add("hidden");
+                    generateBtn.disabled = false;
+                    document.getElementById("previewModal").classList.add("hidden");
+                    alert("Excel file downloaded successfully!");
+                } catch (error) {
+                    console.error("Error generating Excel:", error);
+                    alert("An error occurred while generating the Excel file. Please try again.");
+                    generateText.textContent = "Generate";
+                    loadingSpinner.classList.add("hidden");
+                    generateBtn.disabled = false;
+                }
+            }, 500); // Small delay to ensure UI updates
+        });
+    </script>
+</body>
+</html>
