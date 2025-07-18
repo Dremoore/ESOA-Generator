@@ -12,7 +12,8 @@
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-4 max-w-4xl">
         <!-- Header -->
-        <h1 class="text-3xl font-bold text-center mb-6">ESOA Attachment Generator</h1>
+        <h1 class="text-3xl font-bold text-center mb-2">ESOA Attachment Generator</h1>
+        <p class="text-center text-sm text-gray-600">Version 0.1.2</p>
 
         <!-- Input Section -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -138,7 +139,9 @@
                 ["Others", "Room and Board - Use of Machines", 1, 500, 500, "", "RoomAndBoard", "", "ROOM AND BOARD"],
                 ["Others", "Room and Board - Personnel Costs", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD"],
                 ["Others", "Room and Board - Rentals and Utilities", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD"],
-                ["Others", "Room and Board - Other Administrative Costs", 1, 1162.5, 1162.5, "", "RoomAndBoard", "", "ROOM AND BOARD"]
+                ["Others", "Room and Board - Other Administrative Costs", 1, 1162.5, 1162.5, "", "RoomAndBoard", "", "ROOM AND BOARD"],
+                [], [], [], [], [], [], [], // Empty rows to reach A18
+                ["Version 0.1.2"]
             ];
             const drugsData = [
                 ["DRUGS AND MEDICINES", "", "", "", "", "", "", "", "", "", "", ""],
@@ -160,7 +163,7 @@
             // Populating RENDER DATE for each entry
             entries.forEach(entry => {
                 if (entry.type === "No EPO and No Lab") {
-                    xrayData.slice(2).forEach(row => row[5] = entry.date);
+                    xrayData.slice(2, 10).forEach(row => row[5] = entry.date);
                     drugsData.slice(2).forEach(row => row[7] = entry.date);
                 }
             });
@@ -176,7 +179,8 @@
                 <table class="w-full border-collapse border border-gray-300 mb-4">
                     <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="4">XRAY, LAB, SUPPLIES AND OTHERS</th><th class="border border-gray-300 p-2" colspan="5"></th></tr>
                     <tr class="bg-gray-200">${xrayData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
-                    ${xrayData.slice(2).map(row => `<tr>${row.map(cell => `<td class="border border-gray-300 p-2">${cell}</td>`).join("")}</tr>`).join("")}
+                    ${xrayData.slice(2, 10).map(row => `<tr>${row.map(cell => `<td class="border border-gray-300 p-2">${cell}</td>`).join("")}</tr>`).join("")}
+                    <tr><td class="border border-gray-300 p-2">${xrayData[17][0]}</td><td class="border border-gray-300 p-2" colspan="8"></td></tr>
                 </table>
                 <h3 class="font-semibold">Drugs and Medicine</h3>
                 <table class="w-full border-collapse border border-gray-300 mb-4">
@@ -309,9 +313,9 @@
                         for (let C = 0; C < xrayData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!xrayWs[cellRef]) xrayWs[cellRef] = { v: xrayData[R][C] };
-                            xrayWs[cellRef].s = R <= 1 ? boldStyle : { font: calibriFont };
+                            xrayWs[cellRef].s = R <= 1 || R === 17 ? boldStyle : { font: calibriFont };
                             if (C === 3 || C === 4) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...accountingFormat }; // Price, Total
-                            if (C === 5 && R >= 2) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...dateFormat }; // RENDER DATE
+                            if (C === 5 && R >= 2 && R < 10) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...dateFormat }; // RENDER DATE
                         }
                     }
 
