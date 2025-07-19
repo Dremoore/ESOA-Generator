@@ -7,13 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.js" onerror="alert('Failed to load Flatpickr. Please check your internet connection and try again.')"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.css">
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-4 max-w-4xl">
         <!-- Header -->
         <h1 class="text-3xl font-bold text-center mb-2">ESOA Attachment Generator</h1>
-        <p class="text-center text-sm text-gray-600">Version 0.1.2</p>
+        <p class="text-center text-sm text-gray-600">Version 0.1.3</p>
 
         <!-- Input Section -->
         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -76,14 +78,20 @@
         // Initializing state for entries
         let entries = [];
 
-        // Setting up date picker
-        flatpickr("#dateInput", {
-            dateFormat: "m/d/Y",
-            allowInput: true,
-            onChange: function(selectedDates, dateStr) {
-                document.getElementById("dateInput").value = dateStr;
+        // Wait for DOM and external scripts to load
+        window.onload = function() {
+            if (typeof flatpickr === "undefined") {
+                alert("Flatpickr failed to load. Date picker functionality may be limited.");
+                return;
             }
-        });
+            flatpickr("#dateInput", {
+                dateFormat: "m/d/Y",
+                allowInput: true,
+                onChange: function(selectedDates, dateStr) {
+                    document.getElementById("dateInput").value = dateStr;
+                }
+            });
+        };
 
         // Handling Add button click
         document.getElementById("addBtn").addEventListener("click", () => {
@@ -141,7 +149,7 @@
                 ["Others", "Room and Board - Rentals and Utilities", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD"],
                 ["Others", "Room and Board - Other Administrative Costs", 1, 1162.5, 1162.5, "", "RoomAndBoard", "", "ROOM AND BOARD"],
                 [], [], [], [], [], [], [], // Empty rows to reach A18
-                ["Version 0.1.2"]
+                ["Version 0.1.3"]
             ];
             const drugsData = [
                 ["DRUGS AND MEDICINES", "", "", "", "", "", "", "", "", "", "", ""],
@@ -307,15 +315,17 @@
                     const boldStyle = { font: { name: "Calibri", sz: 11, bold: true } };
                     const accountingFormat = { numFmt: "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)" };
                     const dateFormat = { numFmt: "mm/dd/yyyy" };
+                    const centerAlign = { alignment: { horizontal: "center" } };
 
                     // Xray sheet formatting
                     for (let R = 0; R < xrayData.length; R++) {
                         for (let C = 0; C < xrayData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!xrayWs[cellRef]) xrayWs[cellRef] = { v: xrayData[R][C] };
-                            xrayWs[cellRef].s = R <= 1 || R === 17 ? boldStyle : { font: calibriFont };
+                            xrayWs[cellRef].s = (R <= 1 || R === 17) ? { ...boldStyle, ...centerAlign } : { font: calibriFont };
                             if (C === 3 || C === 4) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...accountingFormat }; // Price, Total
                             if (C === 5 && R >= 2 && R < 10) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...dateFormat }; // RENDER DATE
+                            if (R === 0) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...centerAlign }; // Center merged A1:D1
                         }
                     }
 
@@ -324,9 +334,10 @@
                         for (let C = 0; C < drugsData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!drugsWs[cellRef]) drugsWs[cellRef] = { v: drugsData[R][C] };
-                            drugsWs[cellRef].s = R <= 1 ? boldStyle : { font: calibriFont };
+                            drugsWs[cellRef].s = R <= 1 ? { ...boldStyle, ...centerAlign } : { font: calibriFont };
                             if (C === 4 || C === 5) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...accountingFormat }; // PRICE, TOTAL COST
                             if (C === 7 && R >= 2) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...dateFormat }; // RENDER DATE
+                            if (R === 0) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...centerAlign }; // Center merged A1:I1
                         }
                     }
 
@@ -335,7 +346,7 @@
                         for (let C = 0; C < paymentItemData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!paymentItemWs[cellRef]) paymentItemWs[cellRef] = { v: paymentItemData[R][C] };
-                            paymentItemWs[cellRef].s = boldStyle;
+                            paymentItemWs[cellRef].s = { ...boldStyle, ...centerAlign };
                         }
                     }
 
@@ -344,7 +355,7 @@
                         for (let C = 0; C < paymentData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!paymentWs[cellRef]) paymentWs[cellRef] = { v: paymentData[R][C] };
-                            paymentWs[cellRef].s = boldStyle;
+                            paymentWs[cellRef].s = { ...boldStyle, ...centerAlign };
                         }
                     }
 
