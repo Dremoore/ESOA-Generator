@@ -316,7 +316,7 @@
                     // Applying font and formatting
                     const calibriFont = { name: "Calibri", sz: 11 };
                     const boldStyle = { font: { name: "Calibri", sz: 11, bold: true } };
-                    const accountingFormat = { numFmt: "#,##0.00" };
+                    const accountingFormat = { numFmt: "_(* #,##0.00_);_(* (#,##0.00);_(* \"-\"??_);_(@_)" };
                     const dateFormat = { numFmt: "mm/dd/yyyy" };
                     const centerAlign = { alignment: { horizontal: "center" } };
 
@@ -325,10 +325,10 @@
                         for (let C = 0; C < xrayData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!xrayWs[cellRef]) xrayWs[cellRef] = { v: xrayData[R][C] };
-                            xrayWs[cellRef].s = (R <= 1 || R === 17) ? { ...boldStyle, ...centerAlign } : { font: calibriFont };
+                            xrayWs[cellRef].s = (R <= 1 || R === 17) ? boldStyle : calibriFont;
                             if (C === 3 || C === 4) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...accountingFormat }; // Price, Total
                             if (C === 5 && R >= 2 && R < 10) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...dateFormat }; // RENDER DATE
-                            if ((R === 0 || R === 17) && xrayData[R][C]) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...centerAlign }; // Center merged cells with data
+                            if ((R === 0 || R === 17) && xrayData[R][C]) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...centerAlign }; // Center merged cells
                         }
                     }
 
@@ -337,10 +337,10 @@
                         for (let C = 0; C < drugsData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!drugsWs[cellRef]) drugsWs[cellRef] = { v: drugsData[R][C] };
-                            drugsWs[cellRef].s = R <= 1 ? { ...boldStyle, ...centerAlign } : { font: calibriFont };
+                            drugsWs[cellRef].s = R <= 1 ? boldStyle : calibriFont;
                             if (C === 4 || C === 5) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...accountingFormat }; // PRICE, TOTAL COST
                             if (C === 7 && R >= 2) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...dateFormat }; // RENDER DATE
-                            if (R === 0 && drugsData[R][C]) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...centerAlign }; // Center merged cells with data
+                            if (R === 0 && drugsData[R][C]) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...centerAlign }; // Center merged cells
                         }
                     }
 
@@ -349,9 +349,9 @@
                         for (let C = 0; C < paymentItemData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!paymentItemWs[cellRef]) paymentItemWs[cellRef] = { v: paymentItemData[R][C] };
-                            paymentItemWs[cellRef].s = { ...boldStyle, ...centerAlign };
+                            paymentItemWs[cellRef].s = boldStyle;
                             if ((C === 3 || C === 4 || C === 12 || C === 13) && R >= 1) paymentItemWs[cellRef].s = { ...paymentItemWs[cellRef].s, ...accountingFormat }; // UNIT PRICE, AMOUNT
-                            if ((R === 0 || R === 1) && paymentItemData[R][C]) paymentItemWs[cellRef].s = { ...paymentItemWs[cellRef].s, ...centerAlign }; // Center merged cells with data
+                            if (R === 0 && paymentItemData[R][C]) paymentItemWs[cellRef].s = { ...paymentItemWs[cellRef].s, ...centerAlign }; // Center merged cells
                         }
                     }
 
@@ -360,9 +360,9 @@
                         for (let C = 0; C < paymentData[0].length; C++) {
                             const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
                             if (!paymentWs[cellRef]) paymentWs[cellRef] = { v: paymentData[R][C] };
-                            paymentWs[cellRef].s = { ...boldStyle, ...centerAlign };
+                            paymentWs[cellRef].s = boldStyle;
                             if ((C === 2 || C === 3 || C === 4) && R >= 1) paymentWs[cellRef].s = { ...paymentWs[cellRef].s, ...accountingFormat }; // AMOUNT, VAT EXEMPT SALE, VAT
-                            if (R === 0 && paymentData[R][C]) paymentWs[cellRef].s = { ...paymentWs[cellRef].s, ...centerAlign }; // Center merged cells with data
+                            if (R === 0 && paymentData[R][C]) paymentWs[cellRef].s = { ...paymentWs[cellRef].s, ...centerAlign }; // Center merged cells
                         }
                     }
 
