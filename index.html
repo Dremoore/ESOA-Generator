@@ -1,408 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESOA Attachment Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.js" onerror="alert('Failed to load Flatpickr. Please check your internet connection and try again.')"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ESOA Attachment Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.js"
+          onerror="alert('Failed to load Flatpickr. Please check your internet connection and try again.')">
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/flatpickr@4.6.13/dist/flatpickr.min.css"/>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div class="container mx-auto p-4 max-w-4xl">
-        <!-- Header -->
-        <h1 class="text-3xl font-bold text-center mb-2">ESOA Attachment Generator</h1>
-        <p class="text-center text-sm text-gray-600">Version 0.1.5</p>
+  <div class="container mx-auto p-4 max-w-4xl">
+    <!-- Header -->
+    <h1 class="text-3xl font-bold text-center mb-2">ESOA Attachment Generator</h1>
+    <p class="text-center text-sm text-gray-600">Version 0.1.6</p>
 
-        <!-- Input Section -->
-        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-            <div class="flex flex-col sm:flex-row gap-4 items-end">
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Date</label>
-                    <div class="flex items-center">
-                        <input id="dateInput" type="text" placeholder="mm/dd/yyyy" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
-                        <button id="calendarBtn" class="ml-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">📅</button>
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Type</label>
-                    <select id="typeSelect" class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="" disabled selected>Please select an option</option>
-                        <option value="No EPO and No Lab">No EPO and No Lab</option>
-                        <option value="No EPO but With Lab">No EPO but With Lab</option>
-                        <option value="With EPO Alfa and Lab - Double Dose">With EPO Alfa and Lab - Double Dose</option>
-                        <option value="With EPO Alfa and Lab">With EPO Alfa and Lab</option>
-                        <option value="With EPO Alfa But No Lab - Double Dose">With EPO Alfa But No Lab - Double Dose</option>
-                        <option value="With EPO Alfa But No Lab">With EPO Alfa But No Lab</option>
-                        <option value="With EPO Beta and Lab">With EPO Beta and Lab</option>
-                        <option value="With EPO Beta But No Lab">With EPO Beta But No Lab</option>
-                    </select>
-                </div>
-                <button id="addBtn" class="p-2 bg-green-500 text-white rounded-md hover:bg-green-600">Add</button>
-            </div>
-            <!-- View Panel -->
-            <div id="viewPanel" class="mt-4">
-                <h2 class="text-lg font-semibold">Added Entries</h2>
-                <ul id="entryList" class="mt-2 space-y-2"></ul>
-            </div>
+    <!-- Input Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <div class="flex flex-col sm:flex-row gap-4 items-end">
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700">Date</label>
+          <div class="flex items-center">
+            <input id="dateInput" type="text" placeholder="mm/dd/yyyy"
+                   class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"/>
+            <button id="calendarBtn" class="ml-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">📅</button>
+          </div>
         </div>
-
-        <!-- Generate Button -->
-        <div class="text-center">
-            <button id="generateBtn" class="p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700">Generate Excel</button>
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700">Type</label>
+          <select id="typeSelect"
+                  class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="" disabled selected>Please select an option</option>
+            <option value="No EPO and No Lab">No EPO and No Lab</option>
+            <option value="No EPO but With Lab">No EPO but With Lab</option>
+            <option value="With EPO Alfa and Lab - Double Dose">With EPO Alfa and Lab - Double Dose</option>
+            <option value="With EPO Alfa and Lab">With EPO Alfa and Lab</option>
+            <option value="With EPO Alfa But No Lab - Double Dose">With EPO Alfa But No Lab - Double Dose</option>
+            <option value="With EPO Alfa But No Lab">With EPO Alfa But No Lab</option>
+            <option value="With EPO Beta and Lab">With EPO Beta and Lab</option>
+            <option value="With EPO Beta But No Lab">With EPO Beta But No Lab</option>
+          </select>
         </div>
-
-        <!-- Modal -->
-        <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-            <div class="bg-white p-6 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-auto">
-                <h2 class="text-xl font-bold mb-4">Preview of Excel File</h2>
-                <div id="previewContent"></div>
-                <div class="mt-4 flex justify-end gap-4">
-                    <button id="cancelBtn" class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Cancel</button>
-                    <button id="confirmGenerateBtn" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
-                        <span id="generateText">Generate</span>
-                        <svg id="loadingSpinner" class="hidden animate-spin h-5 w-5 ml-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <button id="addBtn" class="p-2 bg-green-500 text-white rounded-md hover:bg-green-600">Add</button>
+      </div>
+      <!-- View Panel -->
+      <div id="viewPanel" class="mt-4">
+        <h2 class="text-lg font-semibold">Added Entries</h2>
+        <ul id="entryList" class="mt-2 space-y-2"></ul>
+      </div>
     </div>
 
-    <script>
-        // Initializing state for entries
-        let entries = [];
+    <!-- Generate Button -->
+    <div class="text-center">
+      <button id="generateBtn" class="p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700">Generate Excel</button>
+    </div>
 
-        // Wait for DOM and external scripts to load
-        window.onload = function() {
-            if (typeof flatpickr === "undefined") {
-                alert("Flatpickr failed to load. Date picker functionality may be limited.");
-                return;
-            }
-            flatpickr("#dateInput", {
-                dateFormat: "m/d/Y",
-                allowInput: true,
-                onChange: function(selectedDates, dateStr) {
-                    document.getElementById("dateInput").value = dateStr;
-                }
-            });
-        };
+    <!-- Modal -->
+    <div id="previewModal"
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-auto">
+        <h2 class="text-xl font-bold mb-4">Preview of Excel File</h2>
+        <div id="previewContent"></div>
+        <div class="mt-4 flex justify-end gap-4">
+          <button id="cancelBtn"
+                  class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Cancel</button>
+          <button id="confirmGenerateBtn"
+                  class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center">
+            <span id="generateText">Generate</span>
+            <svg id="loadingSpinner"
+                 class="hidden animate-spin h-5 w-5 ml-2 text-white"
+                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        // Handling Add button click
-        document.getElementById("addBtn").addEventListener("click", () => {
-            const dateInput = document.getElementById("dateInput").value;
-            const typeSelect = document.getElementById("typeSelect").value;
+  <script>
+    let entries = [];
 
-            // Validating inputs
-            const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-            if (!dateRegex.test(dateInput)) {
-                alert("Please enter a valid date in mm/dd/yyyy format.");
-                return;
-            }
-            if (!typeSelect) {
-                alert("Please select a Type.");
-                return;
-            }
-
-            // Adding entry
-            entries.push({ date: dateInput, type: typeSelect });
-            updateViewPanel();
-            // Resetting inputs
-            document.getElementById("dateInput").value = "";
-            document.getElementById("typeSelect").value = "";
-        });
-
-        // Updating view panel
-        function updateViewPanel() {
-            const entryList = document.getElementById("entryList");
-            entryList.innerHTML = "";
-            entries.forEach((entry, index) => {
-                const li = document.createElement("li");
-                li.className = "flex justify-between items-center p-2 border-b";
-                li.innerHTML = `${index + 1}. ${entry.date} ${entry.type} <button class="p-1 bg-red-500 text-white rounded hover:bg-red-600" onclick="deleteEntry(${index})">Delete</button>`;
-                entryList.appendChild(li);
-            });
+    window.onload = function() {
+      if (typeof flatpickr === "undefined") {
+        alert("Flatpickr failed to load. Date picker functionality may be limited.");
+        return;
+      }
+      flatpickr("#dateInput", {
+        dateFormat: "m/d/Y",
+        allowInput: true,
+        onChange: (selectedDates, dateStr) => {
+          document.getElementById("dateInput").value = dateStr;
         }
+      });
+    };
 
-        // Deleting an entry
-        function deleteEntry(index) {
-            entries.splice(index, 1);
-            updateViewPanel();
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const dateInput = document.getElementById("dateInput").value;
+      const typeSelect = document.getElementById("typeSelect").value;
+      const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+      if (!dateRegex.test(dateInput)) {
+        alert("Please enter a valid date in mm/dd/yyyy format.");
+        return;
+      }
+      if (!typeSelect) {
+        alert("Please select a Type.");
+        return;
+      }
+      entries.push({ date: dateInput, type: typeSelect });
+      updateViewPanel();
+      document.getElementById("dateInput").value = "";
+      document.getElementById("typeSelect").value = "";
+    });
+
+    function updateViewPanel() {
+      const entryList = document.getElementById("entryList");
+      entryList.innerHTML = "";
+      entries.forEach((entry, i) => {
+        const li = document.createElement("li");
+        li.className = "flex justify-between items-center p-2 border-b";
+        li.innerHTML = `
+          ${i+1}. ${entry.date} ${entry.type}
+          <button class="p-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  onclick="deleteEntry(${i})">Delete
+          </button>`;
+        entryList.appendChild(li);
+      });
+    }
+
+    function deleteEntry(idx) {
+      entries.splice(idx, 1);
+      updateViewPanel();
+    }
+
+    function generateExcelData() {
+      // Data templates
+      const xrayData = [
+        ["XRAY, LAB, SUPPLIES AND OTHERS", "", "", "", "", "", "", "", ""],
+        ["TYPE","DESCRIPTION","QTY","Price","Total","RENDER DATE","ESOA Group Type","PhilHealth Unit Mapping","PhilHealth Mapping"],
+        ["Supplies","DIALYZER",1,500,500,"","MedicalSupplies","PIECE","LOW FLUX DIALYZER OR ITS EQUIVALENT"],
+        ["Supplies","BLOODLINES",1,312.5,312.5,"","MedicalSupplies","PIECE","BLOODLINES"],
+        ["Others","Fistula Needles with Safety",1,312.5,312.5,"","Others","PIECE","Others"],
+        ["Supplies","FISTULA KIT",1,312.5,312.5,"","MedicalSupplies","KIT","FISTULA KIT"],
+        ["Others","Room and Board - Use of Machines",1,500,500,"","RoomAndBoard","","ROOM AND BOARD"],
+        ["Others","Room and Board - Personnel Costs",1,1750,1750,"","RoomAndBoard","","ROOM AND BOARD"],
+        ["Others","Room and Board - Rentals and Utilities",1,1750,1750,"","RoomAndBoard","","ROOM AND BOARD"],
+        ["Others","Room and Board - Other Administrative Costs",1,1162.5,1162.5,"","RoomAndBoard","","ROOM AND BOARD"],
+        [],[],[],[],[],[],[], // padding to row 18
+        ["Version 0.1.6"]
+      ];
+
+      const drugsData = [
+        ["DRUGS AND MEDICINES","","","","","","","","","","",""],
+        ["ITEMID","BRAND NAME","GENERIC NAME","QTY","PRICE","TOTAL COST","PREPARATION","RENDER DATE","FREQUENCY","ROUTE","PhilHealt Mapping","PhilHealth Unit Mapping"],
+        ["MED01","APRINOL","REGULAR HEPARIN",1,250,250,"VIAL","","","","HEPARIN ( as SODIUM) 5000 IU/mL SOLUTION 5 mL VIAL","VIAL"],
+        ["MED02","SALINE PHILRX","PNSS(PLAIN NORMAL SALINE SOLUTION)",1,100,100,"BOTTLE","","","","0.9% SODIUM CHLORIDE SOLUTION 1 L BOTTLE","BOTTLE"],
+        ["MED03","CITRAPURE","HEMODIALYSIS ACID CONCENTRATE (DIALYSATE ACETATE BASED)",1,375,375,"GALLON","","","","HEMODIALYSIS ACID CONCENTRATE (DIALYSATE ACETATE BASED) 5 L","GALLON"],
+        ["MED04","RENAL PURE","HEMODIALYSIS BICARBONATE CONCENTRATE",1,175,175,"GALLON","","","","HEMODIALYSIS BICARBONATE CONCENTRATE 5 L","GALLON"]
+      ];
+
+      const paymentItemData = [
+        ["Drugs Payment ITEM","","","","","XRAY Payment ITEM","","","","","","",""],
+        ["OR Number","DESCRIPTION","QTY","UNIT PRICE","AMOUNT","OR Number","DESCRIPTION","QTY","UNIT PRICE","AMOUNT","","",""]
+      ];
+
+      const paymentData = [
+        ["PAYMENT","","","",""],
+        ["OR NUMBER","OR DATE","AMOUNT","VAT EXEMPT SALE","VAT"]
+      ];
+
+      // Fill render dates for “No EPO and No Lab”
+      entries.forEach(ent => {
+        if (ent.type === "No EPO and No Lab") {
+          xrayData.slice(2, 10).forEach(r => r[5] = ent.date);
+          drugsData.slice(2).forEach(r => r[7] = ent.date);
         }
+      });
 
-        // Generating Excel data for "No EPO and No Lab"
-        function generateExcelData() {
-            const xrayData = [
-                ["XRAY, LAB, SUPPLIES AND OTHERS", "", "", "", "", "", "", "", ""],
-                ["TYPE", "DESCRIPTION", "QTY", "Price", "Total", "RENDER DATE", "ESOA Group Type", "PhilHealth Unit Mapping", "PhilHealth Mapping"],
-                ["Supplies", "DIALYZER", 1, 500, 500, "", "MedicalSupplies", "PIECE", "LOW FLUX DIALYZER OR ITS EQUIVALENT"],
-                ["Supplies", "BLOODLINES", 1, 312.5, 312.5, "", "MedicalSupplies", "PIECE", "BLOODLINES"],
-                ["Others", "Fistula Needles with Safety", 1, 312.5, 312.5, "", "Others", "PIECE", "Others"],
-                ["Supplies", "FISTULA KIT", 1, 312.5, 312.5, "", "MedicalSupplies", "KIT", "FISTULA KIT"],
-                ["Others", "Room and Board - Use of Machines", 1, 500, 500, "", "RoomAndBoard", "", "ROOM AND BOARD"],
-                ["Others", "Room and Board - Personnel Costs", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD"],
-                ["Others", "Room and Board - Rentals and Utilities", 1, 1750, 1750, "", "RoomAndBoard", "", "ROOM AND BOARD"],
-                ["Others", "Room and Board - Other Administrative Costs", 1, 1162.5, 1162.5, "", "RoomAndBoard", "", "ROOM AND BOARD"],
-                [], [], [], [], [], [], [], // Empty rows to reach A18
-                ["Version 0.1.5"]
-            ];
-            const drugsData = [
-                ["DRUGS AND MEDICINES", "", "", "", "", "", "", "", "", "", "", ""],
-                ["ITEMID", "BRAND NAME", "GENERIC NAME", "QTY", "PRICE", "TOTAL COST", "PREPARATION", "RENDER DATE", "FREQUENCY", "ROUTE", "PhilHealt Mapping", "PhilHealth Unit Mapping"],
-                ["MED01", "APRINOL", "REGULAR HEPARIN", 1, 250, 250, "VIAL", "", "", "", "HEPARIN ( as SODIUM) 5000 IU/mL SOLUTION 5 mL VIAL", "VIAL"],
-                ["MED02", "SALINE PHILRX", "PNSS(PLAIN NORMAL SALINE SOLUTION)", 1, 100, 100, "BOTTLE", "", "", "", "0.9% SODIUM CHLORIDE SOLUTION 1 L BOTTLE", "BOTTLE"],
-                ["MED03", "CITRAPURE", "HEMODIALYSIS ACID CONCENTRATE (DIALYSATE ACETATE BASED)", 1, 375, 375, "GALLON", "", "", "", "HEMODIALYSIS ACID CONCENTRATE (DIALYSATE ACETATE BASED) 5 L", "GALLON"],
-                ["MED04", "RENAL PURE", "HEMODIALYSIS BICARBONATE CONCENTRATE", 1, 175, 175, "GALLON", "", "", "", "HEMODIALYSIS BICARBONATE CONCENTRATE 5 L", "GALLON"]
-            ];
-            const paymentItemData = [
-                ["Drugs Payment ITEM", "", "", "", "", "", "", "", "", "XRAY Payment ITEM", "", "", "", ""],
-                ["OR Number", "DESCRIPTION", "QTY", "UNIT PRICE", "AMOUNT", "", "", "", "", "OR Number", "DESCRIPTION", "QTY", "UNIT PRICE", "AMOUNT"]
-            ];
-            const paymentData = [
-                ["PAYMENT", "", "", "", ""],
-                ["OR NUMBER", "OR DATE", "AMOUNT", "VAT EXEMPT SALE", "VAT"]
-            ];
+      return { xrayData, drugsData, paymentItemData, paymentData };
+    }
 
-            // Populating RENDER DATE for each entry
-            entries.forEach(entry => {
-                if (entry.type === "No EPO and No Lab") {
-                    xrayData.slice(2, 10).forEach(row => row[5] = entry.date);
-                    drugsData.slice(2).forEach(row => row[7] = entry.date);
-                }
-            });
+    function generatePreview() {
+      const { xrayData, drugsData, paymentItemData, paymentData } = generateExcelData();
+      let html = `
+        <h3 class="font-semibold">Xray Lab Supplies and Others</h3>
+        <table class="w-full border-collapse border border-gray-300 mb-4">
+          <tr class="bg-gray-200">
+            <th class="border border-gray-300 p-2" colspan="4">XRAY, LAB, SUPPLIES AND OTHERS</th>
+            <th class="border border-gray-300 p-2" colspan="5"></th>
+          </tr>
+          <tr class="bg-gray-200">
+            ${xrayData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}
+          </tr>
+          ${xrayData.slice(2, 10)
+            .map(r => `<tr>${r.map(c => `<td class="border border-gray-300 p-2">${c}</td>`).join("")}</tr>`)
+            .join("")}
+          <tr>
+            <td class="border border-gray-300 p-2">${xrayData[17][0]}</td>
+            <td class="border border-gray-300 p-2" colspan="8"></td>
+          </tr>
+        </table>
 
-            return { xrayData, drugsData, paymentItemData, paymentData };
-        }
+        <h3 class="font-semibold">Drugs and Medicine</h3>
+        <table class="w-full border-collapse border border-gray-300 mb-4">
+          <tr class="bg-gray-200">
+            <th class="border border-gray-300 p-2" colspan="9">DRUGS AND MEDICINES</th>
+            <th class="border border-gray-300 p-2" colspan="3"></th>
+          </tr>
+          <tr class="bg-gray-200">
+            ${drugsData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}
+          </tr>
+          ${drugsData.slice(2)
+            .map(r => `<tr>${r.map(c => `<td class="border border-gray-300 p-2">${c}</td>`).join("")}</tr>`)
+            .join("")}
+        </table>
 
-        // Generating preview HTML
-        function generatePreview() {
-            const { xrayData, drugsData, paymentItemData, paymentData } = generateExcelData();
-            let html = `
-                <h3 class="font-semibold">Xray Lab Supplies and Others</h3>
-                <table class="w-full border-collapse border border-gray-300 mb-4">
-                    <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="4">XRAY, LAB, SUPPLIES AND OTHERS</th><th class="border border-gray-300 p-2" colspan="5"></th></tr>
-                    <tr class="bg-gray-200">${xrayData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
-                    ${xrayData.slice(2, 10).map(row => `<tr>${row.map(cell => `<td class="border border-gray-300 p-2">${cell}</td>`).join("")}</tr>`).join("")}
-                    <tr><td class="border border-gray-300 p-2">${xrayData[17][0]}</td><td class="border border-gray-300 p-2" colspan="8"></td></tr>
-                </table>
-                <h3 class="font-semibold">Drugs and Medicine</h3>
-                <table class="w-full border-collapse border border-gray-300 mb-4">
-                    <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="9">DRUGS AND MEDICINES</th><th class="border border-gray-300 p-2" colspan="3"></th></tr>
-                    <tr class="bg-gray-200">${drugsData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
-                    ${drugsData.slice(2).map(row => `<tr>${row.map(cell => `<td class="border border-gray-300 p-2">${cell}</td>`).join("")}</tr>`).join("")}
-                </table>
-                <h3 class="font-semibold">Payment ITEM</h3>
-                <table class="w-full border-collapse border border-gray-300 mb-4">
-                    <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="5">Drugs Payment ITEM</th><th class="border border-gray-300 p-2" colspan="4"></th><th class="border border-gray-300 p-2" colspan="5">XRAY Payment ITEM</th></tr>
-                    <tr class="bg-gray-200">${paymentItemData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
-                </table>
-                <h3 class="font-semibold">Payment</h3>
-                <table class="w-full border-collapse border border-gray-300 mb-4">
-                    <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="5">PAYMENT</th></tr>
-                    <tr class="bg-gray-200">${paymentData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}</tr>
-                </table>
-            `;
-            document.getElementById("previewContent").innerHTML = html;
-        }
+        <h3 class="font-semibold">Payment ITEM</h3>
+        <table class="w-full border-collapse border border-gray-300 mb-4">
+          <tr class="bg-gray-200">
+            <th class="border border-gray-300 p-2" colspan="5">Drugs Payment ITEM</th>
+            <th class="border border-gray-300 p-2" colspan="5">XRAY Payment ITEM</th>
+          </tr>
+          <tr class="bg-gray-200">
+            ${paymentItemData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}
+          </tr>
+        </table>
 
-        // Handling Generate button
-        document.getElementById("generateBtn").addEventListener("click", () => {
-            if (entries.length === 0) {
-                alert("Please add at least one entry.");
-                return;
+        <h3 class="font-semibold">Payment</h3>
+        <table class="w-full border-collapse border border-gray-300 mb-4">
+          <tr class="bg-gray-200">
+            <th class="border border-gray-300 p-2" colspan="5">PAYMENT</th>
+          </tr>
+          <tr class="bg-gray-200">
+            ${paymentData[1].map(h => `<th class="border border-gray-300 p-2">${h}</th>`).join("")}
+          </tr>
+        </table>
+      `;
+      document.getElementById("previewContent").innerHTML = html;
+    }
+
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      if (!entries.length) {
+        alert("Please add at least one entry.");
+        return;
+      }
+      generatePreview();
+      document.getElementById("previewModal").classList.remove("hidden");
+    });
+
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+      document.getElementById("previewModal").classList.add("hidden");
+    });
+
+    document.getElementById("confirmGenerateBtn").addEventListener("click", () => {
+      const btn = document.getElementById("confirmGenerateBtn");
+      const text = document.getElementById("generateText");
+      const spinner = document.getElementById("loadingSpinner");
+      text.textContent = "Generating…";
+      spinner.classList.remove("hidden");
+      btn.disabled = true;
+
+      setTimeout(() => {
+        try {
+          const { xrayData, drugsData, paymentItemData, paymentData } = generateExcelData();
+          const wb = XLSX.utils.book_new();
+          const xws = XLSX.utils.aoa_to_sheet(xrayData);
+          const dws = XLSX.utils.aoa_to_sheet(drugsData);
+          const piws = XLSX.utils.aoa_to_sheet(paymentItemData);
+          const pws = XLSX.utils.aoa_to_sheet(paymentData);
+
+          // Col widths (as before)…
+          xws['!cols'] = [
+            {wch:14.29},{wch:36.57},{wch:9.43},{wch:29.43},{wch:9.29},
+            {wch:22.71},{wch:28.29},{wch:26.86},{wch:68.29}
+          ];
+          dws['!cols'] = [
+            {wch:11.57},{wch:18.29},{wch:58.29},{wch:13.43},{wch:13.57},
+            {wch:21},{wch:19.57},{wch:20.86},{wch:12.86},{wch:12.86},
+            {wch:62},{wch:25.43}
+          ];
+          piws['!cols'] = [
+            {wch:13.86},{wch:14.86},{wch:8.43},{wch:14.14},{wch:10},
+            {wch:13.86},{wch:14.86},{wch:8.43},{wch:14.14},{wch:10},
+            {wch:0},{wch:0},{wch:0},{wch:0}
+          ];
+          pws['!cols'] = [
+            {wch:16.14},{wch:11.43},{wch:8.43},{wch:21},{wch:8.43}
+          ];
+
+          // Row heights
+          xws['!rows'] = Array(xrayData.length).fill({hpt:15});
+          dws['!rows'] = Array(drugsData.length).fill({hpt:15});
+          piws['!rows']= Array(paymentItemData.length).fill({hpt:15});
+          pws['!rows'] = Array(paymentData.length).fill({hpt:15});
+
+          // Merges
+          xws['!merges'] = [
+            {s:{r:0,c:0},e:{r:0,c:3}},
+            {s:{r:17,c:0},e:{r:17,c:8}}
+          ];
+          dws['!merges'] = [{s:{r:0,c:0},e:{r:0,c:8}}];
+          piws['!merges'] = [
+            {s:{r:0,c:0},e:{r:0,c:4}},
+            {s:{r:0,c:5},e:{r:0,c:9}}
+          ];
+          pws['!merges'] = [{s:{r:0,c:0},e:{r:0,c:4}}];
+
+          // Styles
+          const calibriFont   = { font: { name:"Calibri", sz:11 } };
+          const boldStyle     = { font: { name:"Calibri", sz:11, bold:true } };
+          const centerAlign   = { alignment:{ horizontal:"center", vertical:"center" } };
+          const acctFmt       = { numFmt:"0.00" };
+          const dateFmt       = { numFmt:"mm/dd/yyyy" };
+
+          // Xray sheet styling
+          for (let R=0; R<xrayData.length; R++) {
+            for (let C=0; C<xrayData[0].length; C++) {
+              const ref = XLSX.utils.encode_cell({r:R,c:C});
+              if (!xws[ref]) xws[ref] = {v:xrayData[R][C]};
+              let style = (R<=1||R===17) ? boldStyle : calibriFont;
+              if (C===3||C===4) style = {...style, ...acctFmt};
+              if (C===5 && R>=2 && R<10) style = {...style, ...dateFmt};
+              // center merged headers
+              if ((R===0||R===17) && xrayData[R][C]) style = {...style, ...centerAlign};
+              xws[ref].s = style;
             }
-            generatePreview();
-            document.getElementById("previewModal").classList.remove("hidden");
-        });
+          }
 
-        // Handling Cancel button
-        document.getElementById("cancelBtn").addEventListener("click", () => {
-            document.getElementById("previewModal").classList.add("hidden");
-        });
+          // Drugs sheet styling
+          for (let R=0; R<drugsData.length; R++) {
+            for (let C=0; C<drugsData[0].length; C++) {
+              const ref = XLSX.utils.encode_cell({r:R,c:C});
+              if (!dws[ref]) dws[ref] = {v:drugsData[R][C]};
+              let style = R<=1 ? boldStyle : calibriFont;
+              if ((C===4||C===5) && R>=2) style = {...style, ...acctFmt};
+              if (C===7 && R>=2) style = {...style, ...dateFmt};
+              if (R===0 && drugsData[R][C]) style = {...style, ...centerAlign};
+              dws[ref].s = style;
+            }
+          }
 
-        // Handling Confirm Generate button
-        document.getElementById("confirmGenerateBtn").addEventListener("click", () => {
-            const generateBtn = document.getElementById("confirmGenerateBtn");
-            const generateText = document.getElementById("generateText");
-            const loadingSpinner = document.getElementById("loadingSpinner");
+          // Payment ITEM sheet styling
+          for (let R=0; R<paymentItemData.length; R++) {
+            for (let C=0; C<paymentItemData[0].length; C++) {
+              const ref = XLSX.utils.encode_cell({r:R,c:C});
+              if (!piws[ref]) piws[ref] = {v:paymentItemData[R][C]};
+              let style = boldStyle;
+              if ([3,4,8,9].includes(C) && R>=1) style = {...style, ...acctFmt};
+              if (R===0 && paymentItemData[R][C]) style = {...style, ...centerAlign};
+              piws[ref].s = style;
+            }
+          }
 
-            // Showing loading state
-            generateText.textContent = "Generating...";
-            loadingSpinner.classList.remove("hidden");
-            generateBtn.disabled = true;
+          // Payment sheet styling
+          for (let R=0; R<paymentData.length; R++) {
+            for (let C=0; C<paymentData[0].length; C++) {
+              const ref = XLSX.utils.encode_cell({r:R,c:C});
+              if (!pws[ref]) pws[ref] = {v:paymentData[R][C]};
+              let style = boldStyle;
+              if ([2,3,4].includes(C) && R>=1) style = {...style, ...acctFmt};
+              if (R===0 && paymentData[R][C]) style = {...style, ...centerAlign};
+              pws[ref].s = style;
+            }
+          }
 
-            setTimeout(() => {
-                try {
-                    const { xrayData, drugsData, paymentItemData, paymentData } = generateExcelData();
-                    const wb = XLSX.utils.book_new();
-                    const xrayWs = XLSX.utils.aoa_to_sheet(xrayData);
-                    const drugsWs = XLSX.utils.aoa_to_sheet(drugsData);
-                    const paymentItemWs = XLSX.utils.aoa_to_sheet(paymentItemData);
-                    const paymentWs = XLSX.utils.aoa_to_sheet(paymentData);
+          XLSX.utils.book_append_sheet(wb, xws, "Xray Lab Supplies and Others");
+          XLSX.utils.book_append_sheet(wb, dws, "Drugs and Medicine");
+          XLSX.utils.book_append_sheet(wb, piws, "Payment ITEM");
+          XLSX.utils.book_append_sheet(wb, pws, "Payment");
 
-                    // Setting column widths
-                    xrayWs['!cols'] = [
-                        { wch: 14.29 }, // A
-                        { wch: 36.57 }, // B
-                        { wch: 9.43 },  // C
-                        { wch: 29.43 }, // D
-                        { wch: 9.29 },  // E
-                        { wch: 22.71 }, // F
-                        { wch: 28.29 }, // G
-                        { wch: 26.86 }, // H
-                        { wch: 68.29 }  // I
-                    ];
-                    drugsWs['!cols'] = [
-                        { wch: 11.57 }, // A
-                        { wch: 18.29 }, // B
-                        { wch: 58.29 }, // C
-                        { wch: 13.43 }, // D
-                        { wch: 13.57 }, // E
-                        { wch: 21 },    // F
-                        { wch: 19.57 }, // G
-                        { wch: 20.86 }, // H
-                        { wch: 12.86 }, // I
-                        { wch: 12.86 }, // J
-                        { wch: 62 },    // K
-                        { wch: 25.43 }  // L
-                    ];
-                    paymentItemWs['!cols'] = [
-                        { wch: 13.86 }, // A
-                        { wch: 14.86 }, // B
-                        { wch: 8.43 },  // C
-                        { wch: 14.14 }, // D
-                        { wch: 10 },    // E
-                        { wch: 8.43 },  // F
-                        { wch: 8.43 },  // G
-                        { wch: 8.43 },  // H
-                        { wch: 8.43 },  // I
-                        { wch: 13.43 }, // J
-                        { wch: 14.43 }, // K
-                        { wch: 8.43 },  // L
-                        { wch: 12 },    // M
-                        { wch: 8.43 }   // N
-                    ];
-                    paymentWs['!cols'] = [
-                        { wch: 16.14 }, // A
-                        { wch: 11.43 }, // B
-                        { wch: 8.43 },  // C
-                        { wch: 21 },    // D
-                        { wch: 8.43 }   // E
-                    ];
+          const firstDate = entries[0]?.date.replace(/\//g,"") || "YYYYMMDD";
+          const fileName = `ESOA_${firstDate}.xlsx`;
+          const wbout = XLSX.write(wb, {bookType:"xlsx", type:"array"});
+          const blob = new Blob([wbout], {type:"application/octet-stream"});
+          const url  = window.URL.createObjectURL(blob);
+          const a    = document.createElement("a");
+          a.href     = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
 
-                    // Setting row heights
-                    xrayWs['!rows'] = Array(xrayData.length).fill({ hpt: 15 });
-                    drugsWs['!rows'] = Array(drugsData.length).fill({ hpt: 15 });
-                    paymentItemWs['!rows'] = Array(paymentItemData.length).fill({ hpt: 15 });
-                    paymentWs['!rows'] = Array(paymentData.length).fill({ hpt: 15 });
-
-                    // Merging cells
-                    xrayWs['!merges'] = [
-                        { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
-                        { s: { r: 17, c: 0 }, e: { r: 17, c: 8 } }
-                    ];
-                    drugsWs['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }];
-                    paymentItemWs['!merges'] = [
-                        { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
-                        { s: { r: 0, c: 9 }, e: { r: 0, c: 13 } }
-                    ];
-                    paymentWs['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
-
-                    // Applying font and formatting
-                    const calibriFont = { name: "Calibri", sz: 11 };
-                    const boldStyle = { font: { name: "Calibri", sz: 11, bold: true } };
-                    const accountingFormat = { numFmt: "_(* #,##0.00_);_(* (#,##0.00);_(* \"-\"??_);_(@_)" };
-                    const dateFormat = { numFmt: "mm/dd/yyyy" };
-                    const centerAlign = { alignment: { horizontal: "center" } };
-
-                    // Xray sheet formatting
-                    for (let R = 0; R < xrayData.length; R++) {
-                        for (let C = 0; C < xrayData[0].length; C++) {
-                            const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!xrayWs[cellRef]) xrayWs[cellRef] = { v: xrayData[R][C] };
-                            xrayWs[cellRef].s = (R <= 1 || R === 17) ? boldStyle : calibriFont;
-                            if (C === 3 || C === 4) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...accountingFormat }; // Price, Total
-                            if (C === 5 && R >= 2 && R < 10) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...dateFormat }; // RENDER DATE
-                            if ((R === 0 || R === 17) && xrayData[R][C]) xrayWs[cellRef].s = { ...xrayWs[cellRef].s, ...centerAlign }; // Center merged cells
-                        }
-                    }
-
-                    // Drugs sheet formatting
-                    for (let R = 0; R < drugsData.length; R++) {
-                        for (let C = 0; C < drugsData[0].length; C++) {
-                            const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!drugsWs[cellRef]) drugsWs[cellRef] = { v: drugsData[R][C] };
-                            drugsWs[cellRef].s = R <= 1 ? boldStyle : calibriFont;
-                            if (C === 4 || C === 5) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...accountingFormat }; // PRICE, TOTAL COST
-                            if (C === 7 && R >= 2) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...dateFormat }; // RENDER DATE
-                            if (R === 0 && drugsData[R][C]) drugsWs[cellRef].s = { ...drugsWs[cellRef].s, ...centerAlign }; // Center merged cells
-                        }
-                    }
-
-                    // Payment ITEM sheet formatting
-                    for (let R = 0; R < paymentItemData.length; R++) {
-                        for (let C = 0; C < paymentItemData[0].length; C++) {
-                            const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!paymentItemWs[cellRef]) paymentItemWs[cellRef] = { v: paymentItemData[R][C] };
-                            paymentItemWs[cellRef].s = boldStyle;
-                            if ((C === 3 || C === 4 || C === 12 || C === 13) && R >= 1) paymentItemWs[cellRef].s = { ...paymentItemWs[cellRef].s, ...accountingFormat }; // UNIT PRICE, AMOUNT
-                            if (R === 0 && paymentItemData[R][C]) paymentItemWs[cellRef].s = { ...paymentItemWs[cellRef].s, ...centerAlign }; // Center merged cells
-                        }
-                    }
-
-                    // Payment sheet formatting
-                    for (let R = 0; R < paymentData.length; R++) {
-                        for (let C = 0; C < paymentData[0].length; C++) {
-                            const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!paymentWs[cellRef]) paymentWs[cellRef] = { v: paymentData[R][C] };
-                            paymentWs[cellRef].s = boldStyle;
-                            if ((C === 2 || C === 3 || C === 4) && R >= 1) paymentWs[cellRef].s = { ...paymentWs[cellRef].s, ...accountingFormat }; // AMOUNT, VAT EXEMPT SALE, VAT
-                            if (R === 0 && paymentData[R][C]) paymentWs[cellRef].s = { ...paymentWs[cellRef].s, ...centerAlign }; // Center merged cells
-                        }
-                    }
-
-                    XLSX.utils.book_append_sheet(wb, xrayWs, "Xray Lab Supplies and Others");
-                    XLSX.utils.book_append_sheet(wb, drugsWs, "Drugs and Medicine");
-                    XLSX.utils.book_append_sheet(wb, paymentItemWs, "Payment ITEM");
-                    XLSX.utils.book_append_sheet(wb, paymentWs, "Payment");
-
-                    // Creating dynamic file name
-                    const firstDate = entries[0]?.date || "20250718";
-                    const formattedDate = firstDate.replace(/\//g, "");
-                    const fileName = `ESOA_${formattedDate}.xlsx`;
-
-                    // Generating and downloading file
-                    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-                    const blob = new Blob([wbout], { type: "application/octet-stream" });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-
-                    // Resetting button and showing success
-                    generateText.textContent = "Generate";
-                    loadingSpinner.classList.add("hidden");
-                    generateBtn.disabled = false;
-                    document.getElementById("previewModal").classList.add("hidden");
-                    alert("Excel file downloaded successfully!");
-                } catch (error) {
-                    console.error("Error generating Excel:", error);
-                    alert("An error occurred while generating the Excel file. Please try again.");
-                    generateText.textContent = "Generate";
-                    loadingSpinner.classList.add("hidden");
-                    generateBtn.disabled = false;
-                }
-            }, 500); // Small delay to ensure UI updates
-        });
-    </script>
+          text.textContent = "Generate";
+          spinner.classList.add("hidden");
+          btn.disabled = false;
+          document.getElementById("previewModal").classList.add("hidden");
+          alert("Excel file downloaded successfully!");
+        }
+        catch(err) {
+          console.error(err);
+          alert("Error generating Excel. Check console for details.");
+          document.getElementById("generateText").textContent = "Generate";
+          document.getElementById("loadingSpinner").classList.add("hidden");
+          btn.disabled = false;
+        }
+      }, 300);
+    });
+  </script>
 </body>
 </html>
+```
